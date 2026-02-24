@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sensei — Feasibility Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111111;
+    --soft: #444444;
+    --muted: #888888;
+    --faint: #f4f3f0;
+    --rule: #e2e0db;
+    --white: #ffffff;
+    --bg: #fdfcf9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 80px 72px;
+    background: var(--ink);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::after {
+    content: 'FEASIBILITY';
+    position: absolute;
+    bottom: -20px;
+    right: -10px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 160px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.04);
+    letter-spacing: -4px;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .cover-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .cover-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .cover-middle {
+    padding: 60px 0 40px;
+  }
+
+  .cover-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .cover-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(52px, 9vw, 100px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 40px;
+  }
+
+  .cover-title em {
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .cover-mission {
+    max-width: 560px;
+    font-size: 18px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+    font-weight: 300;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    padding-left: 24px;
+  }
+
+  .cover-bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 32px;
+  }
+
+  .cover-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cover-meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .cover-meta-value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 400;
+  }
+
+  /* ── BODY ── */
+  .body-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+
+  /* ── SECTION ── */
+  .fs-section {
+    margin-bottom: 88px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .fs-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .section-verdict {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .verdict-pass {
+    background: #e8f5ee;
+    color: #2d7a4f;
+  }
+
+  .verdict-conditional {
+    background: #fef6e4;
+    color: #b07d2a;
+  }
+
+  p {
+    color: var(--soft);
+    margin-bottom: 18px;
+    font-size: 16px;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--faint);
+    border-left: 3px solid var(--ink);
+    padding: 20px 28px;
+    margin: 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .callout p {
+    font-family: 'Crimson Pro', serif;
+    font-size: 20px;
+    font-style: italic;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .callout cite {
+    display: block;
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-style: normal;
+  }
+
+  /* ── RISK / DECISION TABLE ── */
+  .assess-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+
+  .assess-cell {
+    background: var(--white);
+    padding: 20px 22px;
+  }
+
+  .assess-cell-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .assess-cell-value {
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .assess-cell-value.risk {
+    color: #c0392b;
+    font-weight: 500;
+  }
+
+  .assess-cell-value.resolved {
+    color: #2d7a4f;
+    font-weight: 500;
+  }
+
+  /* ── DECISION ROW ── */
+  .decision-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+
+  .decision-col {
+    background: var(--white);
+    padding: 24px 28px;
+  }
+
+  .decision-col h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    color: var(--muted);
+  }
+
+  .decision-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .decision-col ul li {
+    font-size: 14px;
+    color: var(--soft);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .decision-col ul li::before {
+    content: '--';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+  }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 12px;
+    padding: 56px;
+    margin-top: 40px;
+  }
+
+  .conclusion-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 20px;
+  }
+
+  .conclusion h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    color: var(--white);
+  }
+
+  .conclusion p {
+    color: rgba(255,255,255,0.65);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .conclusion-verdict {
+    display: inline-block;
+    margin-top: 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 10px 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    border-radius: 2px;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    border-top: 1px solid var(--rule);
+    padding: 40px 48px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .doc-footer-name {
+    font-family: 'Crimson Pro', serif;
+    font-size: 18px;
+    color: var(--ink);
+  }
+
+  .doc-footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .doc-footer-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .doc-footer-links a:hover { color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .cover { padding: 48px 28px; }
+    .cover-bottom { grid-template-columns: 1fr 1fr; gap: 24px; background: none; }
+    .body-wrap { padding: 64px 24px; }
+    .assess-grid { grid-template-columns: 1fr; }
+    .decision-row { grid-template-columns: 1fr; }
+    .conclusion { padding: 36px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="cover">
+  <div class="cover-top">
+    <span class="cover-label">Product Feasibility Study</span>
+    <span class="cover-date">2025</span>
+  </div>
+
+  <div class="cover-middle">
+    <p class="cover-eyebrow">Pre-Development Assessment</p>
+    <h1 class="cover-title">Sensei<br><em>Clarity System</em></h1>
+    <p class="cover-mission">People don't afford these resources, but the only way to afford them is when you're educated. So why are we adding stumbling blocks for people to get educated?</p>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-meta">
+      <span class="cover-meta-label">Author</span>
+      <span class="cover-meta-value">Natasha Matare</span>
+    </div>
+    <div class="cover-meta">
+      <span class="cover-meta-label">SDLC Phase</span>
+      <span class="cover-meta-value">Planning</span>
+    </div>
+    <div class="cover-meta">
+      <span class="cover-meta-label">Methodology</span>
+      <span class="cover-meta-value">Agile</span>
+    </div>
+    <div class="cover-meta">
+      <span class="cover-meta-label">Overall Verdict</span>
+      <span class="cover-meta-value">Feasible — Proceed</span>
+    </div>
+  </div>
+</section>
+
+<!-- BODY -->
+<main class="body-wrap">
+
+  <!-- PROBLEM STATEMENT -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">00</span>
+      <h2 class="section-title">Problem Statement</h2>
+    </div>
+
+    <p>The starting question was not "what should I build?" It was: <strong>"What tool exists that would actually match my study style — how I understand concepts?"</strong> The search for that tool came up empty.</p>
+
+    <p>Existing solutions — lecture slides, textbooks, YouTube, Google — deliver the same format to every learner and expect the same results. But understanding is not uniform. It depends on personality, emotional state, learning style, and the right analogy at the right moment.</p>
+
+    <div class="callout">
+      <p>"When I reached flow state in my studying, I realized how much I enjoy what I study. That became my motivation to keep going. I wanted to build something that creates students who actually understand — not just students who know."</p>
+      <cite>Natasha Matare — Product Origin</cite>
+    </div>
+
+    <p>A secondary observation reinforced the problem: a friend asked Natasha to input her notes into ChatGPT because she couldn't afford the Pro subscription. The barrier to AI-assisted learning wasn't awareness — it was access. Sensei was conceived as a solution that removes that barrier: accessible to any demographic, adaptable to any learner.</p>
+  </section>
+
+  <!-- TECHNICAL FEASIBILITY -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Technical Feasibility</h2>
+      <span class="section-verdict verdict-pass">PASS</span>
+    </div>
+
+    <p>Before committing to development, the technical requirements were inventoried against existing skills and identified gaps.</p>
+
+    <div class="assess-grid">
+      <div class="assess-cell">
+        <div class="assess-cell-label">Capability</div>
+        <div class="assess-cell-value">Frontend development, UI design, application architecture, hosting deployment</div>
+      </div>
+      <div class="assess-cell">
+        <div class="assess-cell-label">Risk Identified</div>
+        <div class="assess-cell-value risk">AI integration via OpenAI API — unknown territory at project start</div>
+      </div>
+      <div class="assess-cell">
+        <div class="assess-cell-label">Resolution</div>
+        <div class="assess-cell-value resolved">Researched and implemented API integration mid-build; actively iterating</div>
+      </div>
+    </div>
+
+    <p>The frontend, design, and hosting requirements were within scope from day one. The critical unknown was <strong>AI integration</strong> — specifically, how to connect the OpenAI API to deliver personalised, context-aware study breakdowns. This was identified as the primary technical risk.</p>
+
+    <p>A secondary decision point emerged around the backend infrastructure: <strong>Firebase vs. Supabase</strong>. Both were evaluated against real-world evidence — a family member's existing Firebase implementation and peer adoption patterns pointing toward Supabase among developers of a similar profile. Firebase was selected as the more familiar and better-documented starting point, with the option to revisit as backend requirements become clearer in the development phase.</p>
+
+    <p><strong>Verdict:</strong> All core capabilities confirmed. Primary risk (AI integration) identified early and being actively resolved through implementation and learning. Technical stack is viable.</p>
+  </section>
+
+  <!-- FINANCIAL FEASIBILITY -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Financial Feasibility</h2>
+      <span class="section-verdict verdict-pass">PASS</span>
+    </div>
+
+    <p>The financial assessment evaluated both the cost to build and the return on investment — not just in revenue terms, but in career and mission terms.</p>
+
+    <div class="decision-row">
+      <div class="decision-col">
+        <h4>Cost to Build</h4>
+        <ul>
+          <li>Cursor Pro subscription (AI-assisted development)</li>
+          <li>ChatGPT Pro (prompt development and research)</li>
+          <li>OpenAI API usage costs</li>
+          <li>Backend hosting (Firebase — current free tier; paid tier planned)</li>
+          <li>Vercel deployment (free tier for MVP)</li>
+        </ul>
+      </div>
+      <div class="decision-col">
+        <h4>Return on Investment</h4>
+        <ul>
+          <li>Portfolio artifact demonstrating full SDLC execution</li>
+          <li>Internship readiness and competitive differentiation</li>
+          <li>Real product with active users — not a demo</li>
+          <li>Foundation for startup if capital raised post-internship</li>
+          <li>Mission return: accessible learning for all demographics</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>The ROI assessment concluded positively. Total build costs are manageable at the student budget level, and the returns — career positioning, a live product, and a scalable foundation — significantly outweigh the investment. The go-to-market strategy is staged deliberately: <strong>Phase 1</strong> deploys via Vercel at no cost to users, building an initial user base and gathering feedback. <strong>Phase 2</strong>, contingent on securing employment and raising capital, transitions Sensei toward a commercially viable product.</p>
+
+    <p><strong>Verdict:</strong> Financially viable at current stage. Costs are known and bounded. ROI is strong across career, product, and mission dimensions.</p>
+  </section>
+
+  <!-- OPERATIONAL FEASIBILITY -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Operational Feasibility</h2>
+      <span class="section-verdict verdict-pass">PASS</span>
+    </div>
+
+    <p>Operational feasibility assessed whether real users would adopt and find value in Sensei as designed. This was validated through three channels.</p>
+
+    <p><strong>Survey validation (51 respondents):</strong> Participants were presented with a description of Sensei's core functionality and asked whether they would use it. The overwhelming majority said yes. One respondent said no. Several said maybe — which itself is useful signal, pointing to areas where the value proposition needs sharpening.</p>
+
+    <p><strong>Stakeholder interviews:</strong> Conversations with a medical student cousin and two brothers provided qualitative confirmation. The medical student's response was particularly instructive: "That's going to work for everybody — it's going to work for me personally." Medical students represent a high-demand, high-stakes learning context. If Sensei works there, it works across the demographic range.</p>
+
+    <p><strong>Observed behaviour:</strong> A friend asking to have her notes manually entered into ChatGPT — because she couldn't afford the Pro subscription — validated both the demand and the access gap Sensei is designed to close.</p>
+
+    <div class="callout">
+      <p>"I believe when you understand something, you become the best version of yourself in that thing. We want to create students who actually understand what they are studying — not just students who just know."</p>
+      <cite>Natasha Matare — Operational Vision</cite>
+    </div>
+
+    <p><strong>Verdict:</strong> Strong user demand confirmed across multiple validation channels. Accessibility is a core product principle — not a feature — which broadens the addressable user base to any learner regardless of economic background.</p>
+  </section>
+
+  <!-- SCHEDULE FEASIBILITY -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Schedule Feasibility</h2>
+      <span class="section-verdict verdict-pass">PASS</span>
+    </div>
+
+    <p>Schedule feasibility evaluated whether Sensei could be built and deployed within a meaningful timeframe alongside academic commitments and full-time employment.</p>
+
+    <p>The decision to use <strong>Cursor</strong> as an AI-assisted development environment significantly compressed the build timeline, allowing rapid prototyping and iteration without sacrificing code quality. This was a deliberate tool selection made during the planning phase — not a mid-build workaround.</p>
+
+    <p>The MVP scope was defined with schedule constraints in mind: core functionality first (file ingestion, AI breakdown, topic-by-topic questioning, progress gating), with advanced features (psychological comfort layer, scenario-based exams, full backend) staged into subsequent sprints. This phased approach — aligned with Agile methodology — ensures a working product can be deployed and iterated on without waiting for every feature to be complete.</p>
+
+    <p><strong>Milestone plan:</strong> MVP functional prototype for portfolio and internship application season. Post-internship: capital raise, backend scaling, and public launch.</p>
+
+    <p><strong>Verdict:</strong> Achievable within the defined timeline using a phased Agile approach. Scope is appropriately bounded for the current development phase.</p>
+  </section>
+
+  <!-- LEGAL FEASIBILITY -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Legal Feasibility</h2>
+      <span class="section-verdict verdict-pass">PASS</span>
+    </div>
+
+    <p>Legal feasibility confirmed that building and deploying an AI-integrated study application is permitted under applicable laws and platform terms of service.</p>
+
+    <p>Key areas reviewed: OpenAI API terms of service (commercial and personal use permitted within usage guidelines), data handling requirements for user-uploaded academic materials, and the absence of regulatory barriers to operating an EdTech product in the target markets.</p>
+
+    <p>Future legal considerations as the product scales: data privacy compliance (PIPEDA in Canada, GDPR if expanding to EU), terms of service for user-generated content, and age-appropriate data handling given the elementary-to-post-grad demographic range.</p>
+
+    <p><strong>Verdict:</strong> No legal barriers to development or deployment at the current stage. Compliance requirements are well-understood and manageable as the product scales.</p>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="fs-section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">SDLC Methodology Selection</h2>
+    </div>
+
+    <p>Following the feasibility assessment, the appropriate SDLC model was selected for development.</p>
+
+    <div class="decision-row">
+      <div class="decision-col">
+        <h4>Agile — Selected</h4>
+        <ul>
+          <li>Iterative sprints with frequent feedback loops</li>
+          <li>Flexible scope — features can be added or cut based on user data</li>
+          <li>Matches the fast-paced, feedback-driven nature of the product</li>
+          <li>Allows MVP deployment before all features are complete</li>
+          <li>Aligns with real-world user research already underway</li>
+        </ul>
+      </div>
+      <div class="decision-col">
+        <h4>Waterfall — Rejected</h4>
+        <ul>
+          <li>Requires complete requirements upfront — not appropriate for a user-research-driven product</li>
+          <li>Sequential phases make it difficult to respond to user feedback mid-build</li>
+          <li>Higher risk of building the wrong thing before discovering it</li>
+          <li>Incompatible with solo development and academic constraints</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>The selection of Agile was not a default choice — it was a deliberate decision based on the nature of the product. Sensei's design is user-feedback-driven by definition: the survey data already reshaped the product direction once, and continued iteration based on real user behaviour is central to the product strategy. Waterfall's rigidity would have worked against that.</p>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section class="fs-section">
+    <div class="conclusion">
+      <p class="conclusion-eyebrow">Overall Assessment</p>
+      <h2>Sensei is feasible across all five dimensions. Proceed to system design.</h2>
+      <p>Technical risks are identified and being actively resolved. Financial investment is bounded and ROI is strong. Operational demand is validated across multiple user segments. Schedule is achievable with a phased Agile approach. No legal barriers exist at the current development stage.</p>
+      <p style="margin-top: 16px;">The deeper validation is not just that this can be built — it is that it <em>should</em> be built. The people who need it most are the people who currently can't afford the tools that would help them. Sensei is the answer to that gap.</p>
+      <span class="conclusion-verdict">VERDICT: FEASIBLE -- PROCEED TO SYSTEM DESIGN</span>
+    </div>
+  </section>
+
+</main>
+
+<footer class="doc-footer">
+  <div class="doc-footer-name">Natasha Matare</div>
+  <div class="doc-footer-links">
+    <a href="https://www.linkedin.com/in/chiedza-matare-b97a29212/" target="_blank">LinkedIn</a>
+    <a href="https://github.com/chieddzaa" target="_blank">GitHub</a>
+    <a href="https://chieddzaa.github.io/natasha-matare/" target="_blank">Portfolio</a>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fs-section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

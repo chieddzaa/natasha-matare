@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sensei — Case Study by Natasha Matare</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #c17f3e;
+    --accent-light: #f5ede0;
+    --bg: #faf8f4;
+    --white: #ffffff;
+    --rule: #e5e0d8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    font-size: 17px;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    color: var(--white);
+    padding: 100px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(193,127,62,0.25) 0%, transparent 70%);
+  }
+
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 7vw, 80px);
+    line-height: 1.05;
+    font-weight: 700;
+    max-width: 700px;
+    margin-bottom: 32px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: rgba(255,255,255,0.6);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-meta-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .hero-meta-value {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 400;
+  }
+
+  /* MAIN CONTENT */
+  .container {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 80px 32px;
+  }
+
+  .section {
+    margin-bottom: 72px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+
+  p {
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  /* PULL QUOTE */
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 20px 28px;
+    margin: 40px 0;
+    background: var(--accent-light);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .pull-quote cite {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-style: normal;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* STAT GRID */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin: 40px 0;
+    background: var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .stat-item {
+    background: var(--white);
+    padding: 32px 24px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-number span {
+    color: var(--accent);
+  }
+
+  .stat-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* FINDING CARDS */
+  .findings {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .finding-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 24px 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .finding-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  .finding-content h4 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+
+  .finding-content p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* DECISION TABLE */
+  .decision-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin: 32px 0;
+    background: var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .decision-col {
+    background: var(--white);
+    padding: 28px;
+  }
+
+  .decision-col h4 {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .decision-col.build h4 { color: #2d7a4f; }
+  .decision-col.cut h4 { color: #c0392b; }
+
+  .decision-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .decision-col ul li {
+    font-size: 14px;
+    color: #444;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .decision-col.build ul li::before {
+    content: '↗';
+    position: absolute;
+    left: 0;
+    color: #2d7a4f;
+    font-size: 12px;
+  }
+
+  .decision-col.cut ul li::before {
+    content: '×';
+    position: absolute;
+    left: 0;
+    color: #c0392b;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* HOW IT WORKS */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 32px 0;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .flow-step:last-child { border-bottom: none; }
+
+  .flow-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .flow-content h4 {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .flow-content p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* REFLECTION */
+  .reflection {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 48px;
+    margin: 40px 0;
+  }
+
+  .reflection h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--white);
+  }
+
+  .reflection p {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  /* FOOTER */
+  .case-footer {
+    border-top: 1px solid var(--rule);
+    padding: 48px 32px;
+    max-width: 740px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 20px;
+  }
+
+  .case-footer-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--ink);
+  }
+
+  .case-footer-links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .case-footer-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .case-footer-links a:hover { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .hero { padding: 64px 24px 56px; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .decision-table { grid-template-columns: 1fr; }
+    .hero-meta { gap: 24px; }
+    .reflection { padding: 32px 24px; }
+    .container { padding: 56px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="hero-label">Product Case Study</p>
+  <h1>Sensei — a <em>clarity</em> system for learning</h1>
+  <p class="hero-sub">What happens when you stop blaming students for struggling, and start redesigning how information reaches them.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Role</span>
+      <span class="hero-meta-value">Product Designer & Builder</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Stack</span>
+      <span class="hero-meta-value">React, Firebase, OpenAI API</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Research</span>
+      <span class="hero-meta-value">51 survey responses</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Users</span>
+      <span class="hero-meta-value">Elementary → Post-grad</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ORIGIN -->
+  <section class="section">
+    <p class="section-label">01 — The Origin</p>
+    <h2>It started with a flow state I couldn't explain</h2>
+    <p>I discovered something strange while studying for my Computer Programming courses. When I uploaded my notes to ChatGPT, defined my learning objectives, and asked questions in real time — I entered a flow state faster than I ever did in a lecture or reading a PowerPoint slide.</p>
+    <p>What made the difference wasn't effort. It was <strong>clarity</strong>.</p>
+    <p>When I was learning about structures in C++, the AI connected them to database tables — a concept I already understood. That mental bridge didn't just explain the topic. It made it stick. I wasn't working harder. I was finally being met where I was.</p>
+
+    <div class="pull-quote">
+      <p>"Then I watched my younger brother struggle with math. He was putting in the effort. The results weren't coming. And I realized — academic performance isn't just about working harder. It's about having the right clarity at the right moment."</p>
+      <cite>Natasha Matare, Builder of Sensei</cite>
+    </div>
+
+    <p>That's when the question shifted from <em>"how do I study better?"</em> to <em>"what if this was a system designed intentionally for clarity and flow — not just a tool I stumbled into?"</em></p>
+    <p>That's how Sensei was born. Not as a chatbot. As a clarity system.</p>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="section">
+    <p class="section-label">02 — The Problem</p>
+    <h2>Students don't struggle because they're not trying hard enough</h2>
+    <p>The real problem is that information delivery doesn't adapt to the person receiving it — their personality, their emotional state, their pace. Traditional learning environments give everyone the same format and expect the same results.</p>
+    <p>But I knew I couldn't build a solution based only on how <em>I</em> learn. So before writing a single line of code, I went to find out how everyone else learns.</p>
+  </section>
+
+  <!-- RESEARCH -->
+  <section class="section">
+    <p class="section-label">03 — The Research</p>
+    <h2>51 people. Three groups. One honest question.</h2>
+
+    <p>I surveyed 51 people across three segments: university friends and classmates, Instagram followers (student demographic), and mothers with school-age children. I intentionally included moms because I didn't want Sensei to only work for people who study like me.</p>
+
+    <div class="stat-grid">
+      <div class="stat-item">
+        <div class="stat-number">51<span>+</span></div>
+        <div class="stat-desc">Survey respondents across age groups</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">3</div>
+        <div class="stat-desc">User segments: students, uni peers, parents</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">14<span>%</span></div>
+        <div class="stat-desc">Said they feel calm while studying — lower than expected</div>
+      </div>
+    </div>
+
+    <p>The questions I wanted answered: How do different personalities experience studying? What emotional states show up during learning? Where does it break down? What tools do people already use, and why do they reach for them?</p>
+
+    <h2 style="margin-top: 40px;">What I found — and what surprised me</h2>
+
+    <div class="findings">
+      <div class="finding-card">
+        <div class="finding-number">1</div>
+        <div class="finding-content">
+          <h4>Distraction and overwhelm were everywhere</h4>
+          <p>Across all groups, the dominant themes were distraction, lack of concentration, and feeling overwhelmed. This confirmed my hypothesis — but seeing it repeated across strangers made it feel like a real design constraint, not just my personal experience.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-number">2</div>
+        <div class="finding-content">
+          <h4>Self-doubt was the biggest surprise</h4>
+          <p>Many respondents said they stop studying because they don't believe they'll understand it anyway. This wasn't on my radar. It reframed the problem: this isn't just a productivity challenge. It's partially a psychological safety challenge.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-number">3</div>
+        <div class="finding-content">
+          <h4>14% said they feel calm — and that changed everything</h4>
+          <p>I'm not someone who naturally feels calm while studying, so this caught me off guard. It meant Sensei shouldn't just "push performance." It needed to model calmness too — to meet the students who are already learning gently, not just the ones fighting through it.</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-number">4</div>
+        <div class="finding-content">
+          <h4>One response reframed the entire design direction</h4>
+          <p>"Not beating myself up when I don't fully understand something the first time." That response stopped me. It reframed studying as something that could be slow and compassionate — not just intense. Sensei needed to hold space for that.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISIONS -->
+  <section class="section">
+    <p class="section-label">04 — The Decisions</p>
+    <h2>What the data told me to build — and what to cut</h2>
+    <p>The survey didn't just validate my instincts. It shifted my priorities from "build a cool app" to "build a clarity system." The most important lesson was prioritization: building for real users is different from building a project to impress people.</p>
+
+    <div class="decision-table">
+      <div class="decision-col build">
+        <h4>Build this</h4>
+        <ul>
+          <li>Adaptive breakdowns based on study personality</li>
+          <li>Real-time clarification, question by question</li>
+          <li>Psychological comfort layer (calm, non-intimidating tone)</li>
+          <li>Progress gating — don't move on until the gap is closed</li>
+          <li>Final exam with scenario-based questions</li>
+          <li>Support for different emotional states</li>
+        </ul>
+      </div>
+      <div class="decision-col cut">
+        <h4>Cut this</h4>
+        <ul>
+          <li>Flashy UI that adds cognitive load</li>
+          <li>Features designed to impress, not to help</li>
+          <li>Complex onboarding that creates friction</li>
+          <li>Anything that makes studying feel harder</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>The guiding principle became: studying is already overwhelming. The product should move in the opposite direction.</p>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section">
+    <p class="section-label">05 — The Product</p>
+    <h2>How Sensei works</h2>
+    <p>Sensei is built for learners from elementary school through post-graduate study. The experience is intentionally simple — structured to remove friction, not add it.</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-dot">1</div>
+        <div class="flow-content">
+          <h4>Upload or type your topic</h4>
+          <p>You bring your lecture slides, a topic you're struggling with, or just a subject you're trying to understand. No special formatting required.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">2</div>
+        <div class="flow-content">
+          <h4>Sensei adapts to your study preferences</h4>
+          <p>Based on what makes concepts click for you — analogies, step-by-step breakdowns, real-world examples — Sensei shapes how it explains material. The content is the same. The delivery is yours.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">3</div>
+        <div class="flow-content">
+          <h4>Topic-by-topic questioning</h4>
+          <p>Sensei works through the material with you one topic at a time, asking questions to track where you're falling behind. It doesn't let you move forward until the gap is genuinely closed — not just skipped.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">4</div>
+        <div class="flow-content">
+          <h4>Psychological comfort layer</h4>
+          <p>Whether your barrier is overwhelm, distraction, or self-doubt, Sensei adapts its tone and pacing. For the 14% who study calmly — and the majority who don't — it meets you where you are.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">5</div>
+        <div class="flow-content">
+          <h4>Scenario-based final exam</h4>
+          <p>After the full session, Sensei tests with real-world scenarios — not just recall. The goal isn't to pass a quiz. It's to confirm the material has actually landed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY UNDERSTANDING -->
+  <section class="section">
+    <p class="section-label">06 — The Philosophy</p>
+    <h2>Why understanding — not just answers</h2>
+
+    <p>There's a tension at the heart of building an AI study tool that most people don't talk about honestly: AI makes it dangerously easy to skip understanding entirely. You can ask it to write your assignment, summarize your notes, give you the answer — and walk away knowing nothing.</p>
+
+    <p>Sensei is built as a direct response to that tension. The progress-gating isn't a UX decision. It's a philosophical one. <strong>You cannot move to the next topic until you actually understand the current one.</strong> Not until you've given the right answer. Not until the gap is genuinely closed. Sensei won't let you fake it forward.</p>
+
+    <div class="pull-quote">
+      <p>"Confidence is what matters most — when you're writing exams, when you're applying for a job, when you're sitting in an interview. Sensei is there to build that confidence. Real confidence. The kind that only comes from actually knowing."</p>
+      <cite>Natasha Matare — Product Philosophy</cite>
+    </div>
+
+    <p>This is also why accessibility matters so much to Sensei's mission. The students who rely most heavily on AI to skip understanding are often the ones who were never given the right tools to build it in the first place. When you can't afford tutors, when the lecture moves too fast, when no one explains it in a way that clicks for you — shortcuts become survival.</p>
+
+    <p>Sensei removes the need for the shortcut by removing the barrier to understanding itself. When you genuinely understand what you're studying, something shifts — you start to enjoy it. You reach flow state. You become the best version of yourself in that subject.</p>
+
+    <p>That's not just a better study tool. That's better people in every sector.</p>
+  </section>
+
+  <!-- REFLECTION -->
+  <section class="section">
+    <p class="section-label">07 — What I Learned</p>
+    <h2>What this process taught me about product thinking</h2>
+
+    <div class="reflection">
+      <h3>Design cannot be ego-driven.</h3>
+      <p>I went into this process thinking I understood the problem because I had lived it. The survey taught me that my experience — while real — was one data point. When I saw that people still heavily relied on Google as a study tool, my first instinct was confusion. Then I caught myself: my experience is not universal. That reminder became a design principle for everything that followed.</p>
+    </div>
+
+    <p>The biggest shift wasn't technical — it was conceptual. I stopped thinking about what would be impressive to build, and started asking what was actually in the way of learning. Those are very different questions, and they lead to very different products.</p>
+    <p>Sensei isn't finished. But it's grounded in something real: 51 people who told me, in their own words, where learning breaks down for them. Every prioritization decision I've made traces back to that data.</p>
+    <p>That's the kind of builder I want to be — one who starts with the person, not the feature.</p>
+  </section>
+
+</main>
+
+<footer class="case-footer">
+  <div class="case-footer-name">Natasha Matare</div>
+  <div class="case-footer-links">
+    <a href="https://www.linkedin.com/in/chiedza-matare-b97a29212/" target="_blank">LinkedIn</a>
+    <a href="https://github.com/chieddzaa" target="_blank">GitHub</a>
+    <a href="https://chieddzaa.github.io/natasha-matare/" target="_blank">Portfolio</a>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
