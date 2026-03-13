@@ -677,6 +677,15 @@ footer span {
   to { opacity: 1; }
 }
 
+/* ── ANIMATION FALLBACK ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-number, .hero-name, .hero-title, .hero-bottom, .scroll-hint {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   nav { padding: 24px 28px; }
@@ -1045,4 +1054,19 @@ footer span {
         current = section.getAttribute('id');
       }
     });
-    navLinks.forEach(link
+    navLinks.forEach(link => {
+      link.style.color = link.getAttribute('href') === '#' + current ? 'var(--gold)' : '';
+    });
+  }, { passive: true });
+
+  // Fallback: force hero visible if animations don't fire
+  setTimeout(() => {
+    document.querySelectorAll('.hero-number, .hero-name, .hero-title, .hero-bottom, .scroll-hint').forEach(el => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+  }, 1500);
+</script>
+
+</body>
+</html>
