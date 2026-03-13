@@ -714,6 +714,7 @@ footer span {
   <a href="#home" class="nav-logo">N.<span>Matare</span></a>
   <ul class="nav-links">
     <li><a href="#sensei">Work</a></li>
+    <li><a href="#projects">Projects</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#skills">Skills</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -725,7 +726,7 @@ footer span {
   <div class="hero-bg"></div>
   <div class="hero-grain"></div>
 
-  <p class="hero-number">001 — Portfolio 2025</p>
+  <p class="hero-number">001 — Portfolio 2026</p>
   <h1 class="hero-name">Natasha<br><em>Matare</em></h1>
   <p class="hero-title">Product Thinker &nbsp;·&nbsp; Systems Builder &nbsp;·&nbsp; Fanshawe College</p>
 
@@ -830,6 +831,25 @@ footer span {
         <span class="stack-tag">Scikit-learn</span>
         <span class="stack-tag">SQL</span>
       </div>
+    </div>
+
+    <a href="shiftsense.html" target="_blank" class="project-card reveal reveal-delay-2">
+      <span class="project-card-arrow">↗</span>
+      <div class="project-card-tag">Product Management · PRD</div>
+      <h3>ShiftSense</h3>
+      <p>A full Product Requirements Document for an operations intelligence dashboard built for QSR production supervisors. Includes user personas, feature prioritization, data model, success metrics, risk framework, and decisions log — written from lived domain experience.</p>
+      <div class="project-card-stack">
+        <span class="stack-tag">PRD</span>
+        <span class="stack-tag">User Research</span>
+        <span class="stack-tag">Data Modelling</span>
+        <span class="stack-tag">Roadmapping</span>
+      </div>
+    </a>
+
+    <div class="project-card reveal reveal-delay-3" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:rgba(201,169,110,0.02);border:1px dashed rgba(201,169,110,0.12);">
+      <div class="project-card-tag" style="margin-bottom:12px">Coming Soon</div>
+      <h3 style="font-size:22px;color:var(--muted);margin-bottom:8px">Next Project</h3>
+      <p style="font-size:13px;margin-bottom:0;color:var(--muted)">Currently in research phase.</p>
     </div>
 
   </div>
@@ -951,7 +971,7 @@ footer span {
   <div class="contact-links reveal reveal-delay-2">
     <a href="https://www.linkedin.com/in/chiedza-matare-b97a29212/" target="_blank" class="contact-link">LinkedIn</a>
     <a href="https://github.com/chieddzaa" target="_blank" class="contact-link">GitHub</a>
-    <a href="mailto:chiedzanatasha26@gmail.com" class="contact-link">Email</a>
+    <a href="/cdn-cgi/l/email-protection#3152595854554b505f504550425950030771565c50585d1f525e5c" class="contact-link">Email</a>
     <a href="Natasha_Matare_Resume.docx" download class="contact-link">Download Resume</a>
   </div>
 
@@ -968,7 +988,7 @@ footer span {
   <span>Built with intention.</span>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
@@ -1025,11 +1045,4 @@ footer span {
         current = section.getAttribute('id');
       }
     });
-    navLinks.forEach(link => {
-      link.style.color = link.getAttribute('href') === '#' + current ? 'var(--gold)' : '';
-    });
-  }, { passive: true });
-</script>
-
-</body>
-</html>
+    navLinks.forEach(link
