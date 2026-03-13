@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShiftSense — PM Case Study by Natasha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C8102E;
+    --red-dim: #8B0A1F;
+    --red-glow: rgba(200,16,46,0.12);
+    --dark: #080808;
+    --surface: #111111;
+    --surface2: #181818;
+    --surface3: #1F1F1F;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.14);
+    --text: #F0EDE8;
+    --text-muted: #888880;
+    --text-dim: #444440;
+    --amber: #E8A020;
+    --green: #22C55E;
+    --blue: #60A5FA;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--red);
+    width: 0%;
+    z-index: 999;
+    transition: width 0.1s linear;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--red);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    border: 1px solid var(--red-dim);
+    padding: 3px 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 120px 80px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+  }
+
+  .hero-accent {
+    position: absolute;
+    top: 20%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(200,16,46,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(56px, 8vw, 120px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s forwards;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.65s forwards;
+    flex-wrap: wrap;
+  }
+
+  .hero-meta-item {}
+  .hero-meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .hero-meta-value {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    right: 80px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.9s forwards;
+  }
+
+  .hero-scroll span {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--red), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--surface);
+  }
+
+  .stat-item {
+    padding: 40px 48px;
+    border-right: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .stat-item:hover::before { transform: scaleX(1); }
+
+  .stat-number {
+    font-family: var(--serif);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .stat-number span { color: var(--red); }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    padding: 120px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-full {
+    padding: 120px 0;
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 80px;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--red-dim);
+  }
+
+  /* ── HEADINGS ── */
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  h2 em { font-style: italic; color: var(--red); }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  /* ── BODY TEXT ── */
+  .lead {
+    font-size: 19px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    max-width: 680px;
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  /* ── PULL QUOTE ── */
+  .pull-quote {
+    border-left: 3px solid var(--red);
+    padding: 24px 40px;
+    margin: 56px 0;
+    background: var(--surface);
+    position: relative;
+  }
+
+  .pull-quote p {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    padding: 24px 28px;
+    margin: 32px 0;
+  }
+
+  .callout.amber { border-left-color: var(--amber); }
+  .callout.blue { border-left-color: var(--blue); }
+  .callout.green { border-left-color: var(--green); }
+
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .callout.amber .callout-label { color: var(--amber); }
+  .callout.blue .callout-label { color: var(--blue); }
+  .callout.green .callout-label { color: var(--green); }
+
+  .callout p { margin: 0; font-size: 15px; }
+
+  /* ── PROBLEM SECTION ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin: 64px 0;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .problem-card:hover { background: var(--surface2); }
+
+  .problem-number {
+    font-family: var(--mono);
+    font-size: 64px;
+    color: var(--border-bright);
+    line-height: 1;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .problem-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .problem-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* ── TWO COL ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  /* ── PERSONA CARDS ── */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .persona-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--red);
+    padding: 36px;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .persona-card:hover {
+    border-color: var(--red);
+    transform: translateY(-4px);
+  }
+
+  .persona-type {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .persona-name {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .persona-quote {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .persona-details { display: flex; flex-direction: column; gap: 10px; }
+
+  .persona-detail {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .persona-detail-label {
+    font-family: var(--mono);
+    color: var(--text-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 2px;
+  }
+
+  .persona-detail-value { color: var(--text-muted); }
+
+  /* ── FEATURES TABLE ── */
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+    font-size: 14px;
+  }
+
+  .feature-table thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--red-dim);
+  }
+
+  .feature-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .feature-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .feature-table tbody tr:hover { background: var(--surface2); }
+
+  .feature-table td {
+    padding: 16px 20px;
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+
+  .feature-table td:first-child {
+    font-weight: 500;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .badge-p0 { background: rgba(200,16,46,0.15); color: #FF4466; border: 1px solid rgba(200,16,46,0.3); }
+  .badge-p1 { background: rgba(232,160,32,0.12); color: var(--amber); border: 1px solid rgba(232,160,32,0.3); }
+  .badge-p2 { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .badge-phase1 { background: rgba(96,165,250,0.1); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+  .badge-phase2 { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
+
+  /* ── METRICS GRID ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 48px;
+  }
+
+  .metric-card {
+    background: var(--surface);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .metric-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .metric-from {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: #FF4466;
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  .metric-arrow { color: var(--text-dim); font-size: 12px; }
+
+  .metric-to {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .metric-method {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  /* ── DATA MODEL ── */
+  .data-model {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .entity-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px 20px;
+    transition: border-color 0.3s;
+  }
+
+  .entity-card:hover { border-color: var(--red-dim); }
+  .entity-card.center { border-color: var(--red-dim); background: var(--surface2); }
+
+  .entity-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .entity-card.center .entity-name { color: var(--red); }
+
+  .entity-field {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 3px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .entity-field .pk { color: var(--amber); font-size: 9px; }
+  .entity-field .fk { color: var(--blue); font-size: 9px; }
+
+  /* ── RISK TABLE ── */
+  .risk-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+    font-size: 14px;
+  }
+
+  .risk-table thead tr { border-bottom: 1px solid var(--red-dim); }
+
+  .risk-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .risk-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .risk-table tbody tr:hover { background: var(--surface2); }
+
+  .risk-table td {
+    padding: 16px 20px;
+    color: var(--text-muted);
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .risk-table td:first-child { color: var(--text); font-weight: 500; font-size: 14px; }
+
+  .likelihood-high { color: #FF4466; font-family: var(--mono); font-size: 11px; font-weight: 500; }
+  .likelihood-med { color: var(--amber); font-family: var(--mono); font-size: 11px; font-weight: 500; }
+  .likelihood-low { color: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 500; }
+
+  /* ── DECISIONS ── */
+  .decision-list { display: flex; flex-direction: column; gap: 1px; margin-top: 40px; }
+
+  .decision-item {
+    background: var(--surface);
+    border-left: 2px solid var(--border-bright);
+    padding: 32px 36px;
+    transition: border-color 0.3s;
+  }
+
+  .decision-item:hover { border-left-color: var(--red); }
+
+  .decision-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .decision-rationale { font-size: 14px; color: var(--text-muted); margin: 0; line-height: 1.65; }
+
+  /* ── NEXT STEPS ── */
+  .next-steps-list { display: flex; flex-direction: column; gap: 1px; margin-top: 40px; }
+
+  .next-step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 24px;
+    background: var(--surface);
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+    transition: background 0.2s;
+  }
+
+  .next-step:hover { background: var(--surface2); }
+
+  .next-step-num {
+    font-family: var(--mono);
+    font-size: 28px;
+    color: var(--red);
+    font-weight: 500;
+    opacity: 0.5;
+    line-height: 1;
+    padding-top: 4px;
+  }
+
+  .next-step-title {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .next-step-desc { font-size: 14px; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 64px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: var(--serif);
+    font-size: 32px;
+    color: var(--text);
+  }
+
+  .footer-logo span { color: var(--red); }
+
+  .footer-meta {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 2;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 80px 0;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 64px; }
+    .section { padding: 80px 24px; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; gap: 40px; }
+    .persona-grid { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .data-model { grid-template-columns: 1fr 1fr; }
+    .problem-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 32px; text-align: center; padding: 48px 24px; }
+    .footer-meta { text-align: center; }
+    .hero-scroll { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .stats-strip { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .data-model { grid-template-columns: 1fr; }
+    .hero-title { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ShiftSense</div>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#personas">Users</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#metrics">Metrics</a></li>
+    <li><a href="#data">Data</a></li>
+    <li><a href="#decisions">Decisions</a></li>
+  </ul>
+  <div class="nav-badge">PM Case Study</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+
+  <div class="hero-tag">Product Requirements Document · v1.0</div>
+
+  <h1 class="hero-title">
+    Shift<em>Sense</em><br>
+  </h1>
+
+  <p class="hero-sub">
+    An operations intelligence dashboard that gives production supervisors real-time visibility into inventory, sales velocity, and waste — so every prep decision is data-driven, not guesswork.
+  </p>
+
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Author</div>
+      <div class="hero-meta-value">Natasha — Production Supervisor & PM Candidate</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Domain</div>
+      <div class="hero-meta-value">Operations Intelligence · QSR</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Status</div>
+      <div class="hero-meta-value" style="color: var(--amber)">Draft — In Review</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Version</div>
+      <div class="hero-meta-value">1.0 · 2026</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-number">40<span>%</span></div>
+    <div class="stat-label">Target stockout reduction</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">25<span>%</span></div>
+    <div class="stat-label">Target waste reduction</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">&lt;2<span>min</span></div>
+    <div class="stat-label">Shift context time (from 15 min)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">12</div>
+    <div class="stat-label">Features across 2 phases</div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="section" id="problem">
+  <div class="section-label">01 — Problem Statement</div>
+  <h2>Every afternoon shift<br>starts <em>blind.</em></h2>
+  <p class="lead">Production supervisors inherit a kitchen they didn't open. The information to run a great shift already exists — it just isn't surfaced at the right time, for the right person.</p>
+
+  <div class="problem-grid reveal">
+    <div class="problem-card">
+      <div class="problem-number">01</div>
+      <div class="problem-title">Reactive Stockouts</div>
+      <p class="problem-desc">Products run out because prep decisions are made without real-time sales velocity data. By the time the gap is visible, it's too late to bake.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-number">02</div>
+      <div class="problem-title">Excess Waste</div>
+      <p class="problem-desc">Over-preparation happens because the supervisor doesn't know what was already prepped in the morning. Unsold product at close is a direct cost.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-number">03</div>
+      <div class="problem-title">Slow Decisions</div>
+      <p class="problem-desc">The first 15–30 minutes of every shift are spent gathering context — time that should be spent managing production at the highest-traffic window of the day.</p>
+    </div>
+  </div>
+
+  <div class="pull-quote reveal">
+    <p>"The information to run a great shift already exists. It just isn't surfaced at the right time, in the right place, for the right person."</p>
+  </div>
+
+  <div class="callout blue reveal">
+    <div class="callout-label">FinTech Parallel</div>
+    <p>The shift gap mirrors a common fintech problem: a portfolio manager inheriting a position with no context on why trades were made. ShiftSense applies the same design pattern — real-time data surfacing, intelligent alerts, and automated reporting — to an operational context. The architecture is directly transferable.</p>
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section class="section" id="personas" style="padding-top: 0;">
+  <div class="section-label">02 — User Personas</div>
+  <h2>Two users.<br><em>One source of truth.</em></h2>
+  <p class="lead">ShiftSense serves two distinct user types with different relationships to the data. The supervisor lives in it. The manager reads from it.</p>
+
+  <div class="persona-grid reveal">
+    <div class="persona-card">
+      <div class="persona-type">Primary User</div>
+      <div class="persona-name">The Production Supervisor</div>
+      <div class="persona-quote">"I want to know what's happening in the store before I even put on my apron."</div>
+      <div class="persona-details">
+        <div class="persona-detail">
+          <span class="persona-detail-label">Shift</span>
+          <span class="persona-detail-value">Afternoon / Bake (2:00 PM – 10:00 PM)</span>
+        </div>
+        <div class="persona-detail">
+          <span class="persona-detail-label">Core Need</span>
+          <span class="persona-detail-value">Context on arrival + proactive alerts + frictionless handoff</span>
+        </div>
+        <div class="persona-detail">
+          <span class="persona-detail-label">Frustration</span>
+          <span class="persona-detail-value">Making prep decisions blind. Discovering stockouts after a customer notices.</span>
+        </div>
+        <div class="persona-detail">
+          <span class="persona-detail-label">Success</span>
+          <span class="persona-detail-value">Full shift picture in under 2 minutes on login.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-type">Secondary User</div>
+      <div class="persona-name">The Store Manager / GM</div>
+      <div class="persona-quote">"I want to see how each shift performed without having to ask anyone."</div>
+      <div class="persona-details">
+        <div class="persona-detail">
+          <span class="persona-detail-label">Frequency</span>
+          <span class="persona-detail-value">Daily — reviews shift reports and trend data</span>
+        </div>
+        <div class="persona-detail">
+          <span class="persona-detail-label">Core Need</span>
+          <span class="persona-detail-value">Consolidated shift performance data without manual aggregation</span>
+        </div>
+        <div class="persona-detail">
+          <span class="persona-detail-label">Frustration</span>
+          <span class="persona-detail-value">Inconsistent verbal reports that aren't searchable or comparable.</span>
+        </div>
+        <div class="persona-detail">
+          <span class="persona-detail-label">Success</span>
+          <span class="persona-detail-value">Opens a shift report and immediately sees what sold, what wasted, what went wrong.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features" style="padding-top: 0;">
+  <div class="section-label">03 — Feature Prioritization</div>
+  <h2>What we build.<br><em>In what order.</em></h2>
+  <p class="lead">12 features scoped across two release phases. P0 ships in Phase 1. Everything else is validated first.</p>
+
+  <div class="reveal">
+    <table class="feature-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Description</th>
+          <th>Priority</th>
+          <th>Effort</th>
+          <th>Phase</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Shift Snapshot</td>
+          <td>Morning summary auto-displayed at login: sales pace, inventory flags, top seller</td>
+          <td><span class="badge badge-p0">P0</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">M</span></td>
+          <td><span class="badge badge-phase1">Phase 1</span></td>
+        </tr>
+        <tr>
+          <td>Live Inventory View</td>
+          <td>Real-time stock levels per product with low / ok / critical indicators</td>
+          <td><span class="badge badge-p0">P0</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">S</span></td>
+          <td><span class="badge badge-phase1">Phase 1</span></td>
+        </tr>
+        <tr>
+          <td>Hourly Sales Tracker</td>
+          <td>Units sold per product per hour, rendered as a bar chart for pattern reading</td>
+          <td><span class="badge badge-p0">P0</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">M</span></td>
+          <td><span class="badge badge-phase1">Phase 1</span></td>
+        </tr>
+        <tr>
+          <td>Low-Stock Alert</td>
+          <td>Triggered when inventory drops below configurable threshold per product</td>
+          <td><span class="badge badge-p0">P0</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">S</span></td>
+          <td><span class="badge badge-phase1">Phase 1</span></td>
+        </tr>
+        <tr>
+          <td>Waste Logger</td>
+          <td>Simple form to log wasted units by product at end of shift</td>
+          <td><span class="badge badge-p0">P0</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">S</span></td>
+          <td><span class="badge badge-phase1">Phase 1</span></td>
+        </tr>
+        <tr>
+          <td>Auto Shift Report</td>
+          <td>Generated at shift end: inventory used, sales summary, waste, alerts triggered</td>
+          <td><span class="badge badge-p1">P1</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">M</span></td>
+          <td><span class="badge badge-phase1">Phase 1</span></td>
+        </tr>
+        <tr>
+          <td>Shift Comparison</td>
+          <td>Side-by-side view of today vs. same shift last week per product</td>
+          <td><span class="badge badge-p1">P1</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">M</span></td>
+          <td><span class="badge badge-phase2">Phase 2</span></td>
+        </tr>
+        <tr>
+          <td>Prep Recommendation</td>
+          <td>Suggested bake quantity based on current inventory + remaining shift velocity</td>
+          <td><span class="badge badge-p1">P1</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">L</span></td>
+          <td><span class="badge badge-phase2">Phase 2</span></td>
+        </tr>
+        <tr>
+          <td>Waste Trend View</td>
+          <td>7 and 30-day waste patterns by product and time of day</td>
+          <td><span class="badge badge-p1">P1</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">M</span></td>
+          <td><span class="badge badge-phase2">Phase 2</span></td>
+        </tr>
+        <tr>
+          <td>Manager Dashboard</td>
+          <td>Aggregate shift performance, waste, and stockout data across supervisors</td>
+          <td><span class="badge badge-p1">P1</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">L</span></td>
+          <td><span class="badge badge-phase2">Phase 2</span></td>
+        </tr>
+        <tr>
+          <td>Context Flags</td>
+          <td>Optional shift-level notes: weather, events, incidents for anomaly explanation</td>
+          <td><span class="badge badge-p2">P2</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">S</span></td>
+          <td><span class="badge badge-phase2">Phase 2</span></td>
+        </tr>
+        <tr>
+          <td>Predictive Prep Engine</td>
+          <td>ML-based quantity suggestions trained on historical shift data over time</td>
+          <td><span class="badge badge-p2">P2</span></td>
+          <td><span style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">L</span></td>
+          <td><span class="badge badge-phase2">Future</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="section" id="metrics" style="padding-top: 0;">
+  <div class="section-label">04 — Success Metrics</div>
+  <h2>What <em>good</em> looks like<br>in 30 days.</h2>
+  <p class="lead">Every metric ties directly to the three failure modes in the problem statement. If we can't measure it, we don't ship it.</p>
+
+  <div class="metrics-grid reveal">
+    <div class="metric-card">
+      <div class="metric-label">Stockout Incidents</div>
+      <div class="metric-row">
+        <span class="metric-from">~3–5/week</span>
+        <span class="metric-arrow">→</span>
+        <span class="metric-to">−40%</span>
+      </div>
+      <div class="metric-method">Incidents logged per shift in app</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">End-of-Shift Waste</div>
+      <div class="metric-row">
+        <span class="metric-from">~10–15% prep</span>
+        <span class="metric-arrow">→</span>
+        <span class="metric-to">−25%</span>
+      </div>
+      <div class="metric-method">Waste log vs. inventory set at shift start</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Alert Response Time</div>
+      <div class="metric-row">
+        <span class="metric-from">&gt;15 min</span>
+        <span class="metric-arrow">→</span>
+        <span class="metric-to">&lt;5 min</span>
+      </div>
+      <div class="metric-method">Alert trigger timestamp vs. prep log entry</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Shift Report Completion</div>
+      <div class="metric-row">
+        <span class="metric-from">0%</span>
+        <span class="metric-arrow">→</span>
+        <span class="metric-to">100%</span>
+      </div>
+      <div class="metric-method">Reports generated per total shifts logged</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Shift Context Time</div>
+      <div class="metric-row">
+        <span class="metric-from">10–15 min</span>
+        <span class="metric-arrow">→</span>
+        <span class="metric-to">&lt;2 min</span>
+      </div>
+      <div class="metric-method">Self-reported in daily shift log</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Daily Active Usage</div>
+      <div class="metric-row">
+        <span class="metric-from">N/A</span>
+        <span class="metric-arrow">→</span>
+        <span class="metric-to">90%</span>
+      </div>
+      <div class="metric-method">Sessions per shift / total shifts in period</div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA MODEL -->
+<section class="section" id="data" style="padding-top: 0;">
+  <div class="section-label">05 — Data Model</div>
+  <h2><em>Product</em> is the center<br>of everything.</h2>
+  <p class="lead">The same relational pattern as a CRM — one central entity that all activity traces back to. A sale is a product sold. A waste entry is a product discarded. An alert is a product running low.</p>
+
+  <div class="data-model reveal">
+    <div class="entity-card">
+      <div class="entity-name">shift</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>store_id</span></div>
+      <div class="entity-field"><span>supervisor_id</span></div>
+      <div class="entity-field"><span>date</span></div>
+      <div class="entity-field"><span>start_time</span></div>
+      <div class="entity-field"><span>end_time</span></div>
+      <div class="entity-field"><span>context_notes</span></div>
+    </div>
+    <div class="entity-card center">
+      <div class="entity-name">product ★</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>name</span></div>
+      <div class="entity-field"><span>category</span></div>
+      <div class="entity-field"><span>prep_unit</span></div>
+      <div class="entity-field"><span>low_threshold</span></div>
+    </div>
+    <div class="entity-card">
+      <div class="entity-name">inventory_log</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>product_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>shift_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>qty_set</span></div>
+      <div class="entity-field"><span>qty_used</span></div>
+      <div class="entity-field"><span>qty_remaining</span></div>
+    </div>
+    <div class="entity-card">
+      <div class="entity-name">sales_event</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>product_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>shift_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>units_sold</span></div>
+      <div class="entity-field"><span>hour_slot</span></div>
+      <div class="entity-field"><span>recorded_at</span></div>
+    </div>
+    <div class="entity-card">
+      <div class="entity-name">alert</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>product_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>shift_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>alert_type</span></div>
+      <div class="entity-field"><span>threshold_val</span></div>
+      <div class="entity-field"><span>acknowledged</span></div>
+    </div>
+    <div class="entity-card">
+      <div class="entity-name">waste_log</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>product_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>shift_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>units_wasted</span></div>
+      <div class="entity-field"><span>reason</span></div>
+      <div class="entity-field"><span>logged_at</span></div>
+    </div>
+    <div class="entity-card">
+      <div class="entity-name">shift_report</div>
+      <div class="entity-field"><span>id</span><span class="pk">PK</span></div>
+      <div class="entity-field"><span>shift_id</span><span class="fk">FK</span></div>
+      <div class="entity-field"><span>content_json</span></div>
+      <div class="entity-field"><span>generated_at</span></div>
+      <div class="entity-field"><span>delivered_to</span></div>
+    </div>
+    <div class="entity-card" style="background: var(--surface3); display:flex; align-items:center; justify-content:center;">
+      <div style="text-align:center">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Legend</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--amber);margin-bottom:6px">PK — Primary Key</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--blue)">FK — Foreign Key</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RISKS -->
+<section class="section" style="padding-top: 0;">
+  <div class="section-label">06 — Risks & Mitigations</div>
+  <h2>What could go<br><em>wrong.</em></h2>
+
+  <div class="reveal">
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>Risk</th>
+          <th>Impact</th>
+          <th>Likelihood</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Manual data fatigue</td>
+          <td>Supervisors stop logging if entry feels like extra work on a busy shift</td>
+          <td><span class="likelihood-high">High</span></td>
+          <td>Minimize input fields. Default values where possible. Mobile-optimized forms with one-tap logging.</td>
+        </tr>
+        <tr>
+          <td>Threshold misconfiguration</td>
+          <td>Wrong low-stock thresholds cause alert noise or missed stockouts</td>
+          <td><span class="likelihood-med">Medium</span></td>
+          <td>Provide sensible defaults per product category. Allow easy in-app threshold editing per shift.</td>
+        </tr>
+        <tr>
+          <td>Shift report ignored</td>
+          <td>Manager doesn't read reports, reducing accountability loop</td>
+          <td><span class="likelihood-med">Medium</span></td>
+          <td>Keep reports scannable — one screen, visual summary first. Add push notification option in Phase 2.</td>
+        </tr>
+        <tr>
+          <td>Data accuracy drift</td>
+          <td>Manual inventory counts diverge from reality over time</td>
+          <td><span class="likelihood-med">Medium</span></td>
+          <td>Add a daily inventory reset prompt at shift start to re-anchor all counts.</td>
+        </tr>
+        <tr>
+          <td>Single-store bias</td>
+          <td>Patterns learned don't generalize to other locations</td>
+          <td><span class="likelihood-low">Low</span></td>
+          <td>V1 is explicitly single-store. Multi-location is a Phase 2 research question after core value is proven.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- DECISIONS -->
+<section class="section" id="decisions" style="padding-top: 0;">
+  <div class="section-label">07 — Decisions Log</div>
+  <h2>Why we said<br><em>no</em> to things.</h2>
+  <p class="lead">Every significant scope decision is documented with its rationale. What you leave out is as important as what you include.</p>
+
+  <div class="decision-list reveal">
+    <div class="decision-item">
+      <div class="decision-title">Manual data entry in V1</div>
+      <p class="decision-rationale">POS integration requires vendor access, API contracts, and engineering overhead that would delay launch by months. The core hypothesis — that surfacing operational data changes supervisor behaviour — can be tested with manual entry. Integration is the right Phase 2 investment once the value is validated, not before.</p>
+    </div>
+    <div class="decision-item">
+      <div class="decision-title">Web-first, tablet-optimised (no native app)</div>
+      <p class="decision-rationale">Kitchen supervisors work on shared tablets, not personal phones. A web app eliminates device dependency, reduces release overhead, and fully covers the use case. Native app development is not warranted until usage patterns justify the investment.</p>
+    </div>
+    <div class="decision-item">
+      <div class="decision-title">No customer data in V1</div>
+      <p class="decision-rationale">The problem is internal and operational. Customer data introduces privacy obligations, compliance requirements, and scope complexity that are not needed to solve the shift gap. This boundary is intentional — not a limitation.</p>
+    </div>
+    <div class="decision-item">
+      <div class="decision-title">Single store scope for V1</div>
+      <p class="decision-rationale">Multi-location rollout requires store comparison logic, role management, and data isolation that add significant complexity before the core product is proven. One store allows fast iteration on real feedback and a clean foundation to scale from.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEXT STEPS -->
+<section class="section" style="padding-top: 0;">
+  <div class="section-label">08 — Next Steps</div>
+  <h2>What happens<br><em>next.</em></h2>
+
+  <div class="next-steps-list reveal">
+    <div class="next-step">
+      <div class="next-step-num">01</div>
+      <div>
+        <div class="next-step-title">Validate user stories</div>
+        <p class="next-step-desc">Share this PRD with one additional production supervisor. Confirm pain points, story priorities, and any missing scenarios before Phase 1 scope is locked.</p>
+      </div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-num">02</div>
+      <div>
+        <div class="next-step-title">Resolve open questions</div>
+        <p class="next-step-desc">Answer threshold logic, product list scope, and shift ownership questions before the data model is finalized. These decisions affect schema design directly.</p>
+      </div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-num">03</div>
+      <div>
+        <div class="next-step-title">Build low-fidelity wireframes</div>
+        <p class="next-step-desc">Sketch the shift snapshot, inventory view, alert panel, and waste logger. Validate with the primary user before any code is written.</p>
+      </div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-num">04</div>
+      <div>
+        <div class="next-step-title">Finalize Phase 1 data model</div>
+        <p class="next-step-desc">Confirm entity relationships, default threshold values, and shift report schema. Document the final model as a shared reference for the engineering lead.</p>
+      </div>
+    </div>
+    <div class="next-step">
+      <div class="next-step-num">05</div>
+      <div>
+        <div class="next-step-title">Ship a working prototype</div>
+        <p class="next-step-desc">Target a functional Phase 1 prototype within 3–4 weeks for a live shift test with the primary user. Real usage data will drive Phase 2 prioritization.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Shift<span>Sense</span></div>
+  <div class="footer-meta">
+    <div>Natasha — Production Supervisor & PM Candidate</div>
+    <div>Product Requirements Document · Version 1.0 · 2026</div>
+    <div style="color:var(--red-dim);margin-top:4px">CONFIDENTIAL — FOR PORTFOLIO USE</div>
+  </div>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progress').style.width = progress + '%';
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Stagger child reveals
+  document.querySelectorAll('.problem-grid, .persona-grid, .metrics-grid, .data-model, .decision-list, .next-steps-list').forEach(container => {
+    const children = container.children;
+    Array.from(children).forEach((child, i) => {
+      child.style.transitionDelay = (i * 0.08) + 's';
+    });
+  });
+</script>
+</body>
+</html>
